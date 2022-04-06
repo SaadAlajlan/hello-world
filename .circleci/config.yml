@@ -17,8 +17,10 @@ jobs:
     steps:
       - checkout
       - run: return 1
-      - run: echo failed
-            when: on_fail
+      - run: 
+          name: Upload Failed Tests
+          command: echo failed
+          when: on_fail
 
 
 
