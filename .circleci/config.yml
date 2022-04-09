@@ -6,7 +6,7 @@ orbs:
   # aws-cli: circleci/aws-cli@2.0.3
 # Define the jobs we want to run for this project
 jobs:
-
+ 
   # Exercise - Rollback
   create_infrastructure: 
     docker:
@@ -20,9 +20,28 @@ jobs:
               --template-file template.yml \
               --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5} \
               --region us-east-1
+
+    # Exercise: Config and Deployment
+  configure_infrastructure: 
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+              # You can get this ID in the section where you registered the SSH Key
+              fingerprints: ["cf:db:c6:b1:af:00:c7:41:a0:ed:51:f0:4f:11:a4:22"] 
+      - run:
+          name: Install Ansible
+          command: |
+            apk add --update ansible
+      - run:
+          name: Run Playbook and Configure server
+          command: |
+            ansible-playbook -i inventory main4.yml
 # Sequential workflow
 workflows:
   # Name the workflow
   myWorkflow:
     jobs:
       - create_infrastructure
+      - configure_infrastructure
